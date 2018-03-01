@@ -1,15 +1,18 @@
 
-
 def points(cars, bonus):
  totalScore = 0
+ bonusRide = 0
 
  for car in cars:
-   totalScore += score_car(car, bonus)
+   carScore, carBonusRide = points_for_car(car, bonus)
+   totalScore += carScore
+   bonusRide += carBonusRide
 
- return totalScore
+ return totalScore, bonusRide
 
-def score_car(car, bonus):
+def points_for_car(car, bonus):
  totalScore = 0
+ bonusRide = 0
 
  carTime = 0
  for ride in car.rides:
@@ -22,10 +25,12 @@ def score_car(car, bonus):
 
      # bonus
      if carTime <= ride.start:
+       bonusRide += 1
        totalScore += bonus
    else:
      print('no points!')
 
    carTime = rideEnd
 
- return totalScore
+ return totalScore, bonusRide
+ 

@@ -2,36 +2,33 @@ import loader
 from model import Car
 import operator
 from validate import points
+from score import score
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-def score(ride, car, bonus, center_of_interest):
-    # distance is good
-    ride_distance = ride.distance()
-    score = ride_distance
-
-    # do we get bonus?
-    x, y = car.current_position()
-    if ride.reachable_on_time(car.time, x, y):
-        score += bonus
-
-    # does this ride take us far away from the center of interest?
-    coi_x, coi_y = center_of_interest
-    distance_to_coi = abs(coi_x - ride.x) + abs(coi_y - ride.y)
-    score -= distance_to_coi
-
-    # do we have a wait time for this ride to start?
-    wait_time = ride.wait_time_until_earliest_start(car.time, x, y)
-    score -= wait_time
-
-    # is it far away?
-    distance_to_start = abs(ride.a - x) + abs(ride.b - y)
-    score -= distance_to_start
-    
-    return score
 
 if __name__ == "__main__":
-    #FILE = 'a_example'
-    FILE = 'b_should_be_easy'
-    #FILE = 'c_no_hurry'
+    
+    # ---- config ----
+    parser = ArgumentParser("hashcode runner",
+                            formatter_class=ArgumentDefaultsHelpFormatter,
+                            conflict_handler='resolve')
+    parser.add_argument('--ride_distance', type=int, default=1)
+    parser.add_argument('--bonus', type=int, default=1)
+    parser.add_argument('--wait_time', type=int, default=1)
+    parser.add_argument('--distance_to_coi', type=int, default=1)
+    parser.add_argument('--distance_to_start', type=int, default=1)
+    parser.add_argument('--file', type=str, default='a')
+    params = parser.parse_args()
+
+
+    file_dict = {
+        'a': 'a_example',
+        'b': 'b_should_be_easy',
+        'c': 'c_no_hurry',
+        'd': 'd_metropolis',
+        'e': 'e_high_bonus',
+    }
+    FILE = file_dict[params.file]
 
     loaded_input = loader.load_input('inputs/{}.in'.format(FILE))
     definition = loaded_input.definition
@@ -58,7 +55,7 @@ if __name__ == "__main__":
             for index in indexed_rides:
                 ride = indexed_rides[index]
                 if car.can_assign_ride(ride):
-                    ride_scores[ride] = score(ride, car, definition.bonus, center)
+                    ride_scores[ride] = score(params, ride, car, definition.bonus, center)
 
             if len(ride_scores) <= 0:
                 continue
@@ -72,8 +69,8 @@ if __name__ == "__main__":
             changed = True
             nb_assigned_rides += 1
     
-    points = points(cars, loaded_input.definition.bonus)
-    print('total points: {}'.format(points))
+    points, bonusRides = points(cars, loaded_input.definition.bonus)
+    print('total points: {}, bonus rides: {}'.format(points, bonusRides))
     print('assigned {} of {} total rides'.format(nb_assigned_rides, len(loaded_input.rides)))
 
     with open('outputs/{}.out'.format(FILE), 'w') as file:

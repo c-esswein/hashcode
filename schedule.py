@@ -73,6 +73,19 @@ if __name__ == "__main__":
     print('total points: {}, bonus rides: {}'.format(points, bonusRides))
     print('assigned {} of {} total rides'.format(nb_assigned_rides, len(loaded_input.rides)))
 
-    with open('outputs/{}.out'.format(FILE), 'w') as file:
+    params_dic = {
+        'ride_distance': params.ride_distance,
+        'bonus': params.bonus,
+        'wait_time': params.wait_time,
+        'distance_to_coi': params.distance_to_coi,
+        'distance_to_start': params.distance_to_start,
+        'file': params.file
+    }
+    paramStr = ''
+    for param_key in params_dic:
+        paramStr += '{}-{}#'.format(param_key, params_dic[param_key])
+
+    with open('outputs/{}{}.out'.format(FILE, paramStr), 'w') as file:
         for car in cars:
             file.write(str(car) + "\n")
+

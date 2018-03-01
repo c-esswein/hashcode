@@ -79,7 +79,8 @@ if __name__ == "__main__":
         'wait_time': params.wait_time,
         'distance_to_coi': params.distance_to_coi,
         'distance_to_start': params.distance_to_start,
-        'file': params.file
+        'file': params.file,
+        'score': points
     }
     paramStr = ''
     for param_key in params_dic:
